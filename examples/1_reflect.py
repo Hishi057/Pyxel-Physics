@@ -9,33 +9,36 @@ class BallManager(pyxphys.GameObject):
         if pyxel.btnp(pyxel.KEY_SPACE):
             self.world.add_object(Ball())
 
+class Box(pyxphys.GameObject):
+    height : float
+    width : float
+    def __init__(self, x = 0, y = 0, height = 10, width = 10):
+        super().__init__(x = x, y = y, IS_FREEZE_POSITION = True)
+        self.name = "box"
+        self.height = height
+        self.width = width
+        self.add_collider(pyxphys.BoxCollider(self.width, self.height))
+    
+    def draw(self):
+        pyxel.rect(self.x - self.width/2, 
+                   self.y - self.height/2, 
+                   self.width, 
+                   self.height, 
+                   pyxel.COLOR_DARK_BLUE)
+
 class Ball(pyxphys.GameObject):
     color : int = 6 # ボールの色
-    radius : int = 10 # ボールの半径
+    radius : int = 24 # ボールの半径
 
     def __init__(self):
         super().__init__()
         self.name = "ball"
-        self.x = pyxel.rndi(0, 199)
+        self.x = pyxel.rndi(130, 170)
         self.y = 100
         angle = pyxel.rndi(30, 150)
         self.vx = pyxel.cos(angle) * 3 + 3
         self.vy = pyxel.rndi(0, 10) * -1
         self.add_collider(pyxphys.CircleCollider(self.radius))
-    
-    def update(self):
-        if self.x < self.radius:
-            self.x = self.radius
-            self.vx *= -1
-        if app.screen_x - self.radius < self.x:
-            self.x = app.screen_x - self.radius
-            self.vx *= -1
-
-        limit_y = self.world.app.screen_y - self.radius # 床の位置
-        if limit_y < self.y:
-            overlap = self.y - limit_y #
-            self.y = limit_y - overlap # 床にめり込んだ分だけ戻す
-            self.vy *= -0.7
 
     def draw(self):
         pyxel.circ(self.x, self.y, self.radius, self.color)
@@ -47,6 +50,8 @@ app.add_world(world)
 
 world.add_object(BallManager())
 world.add_object(Ball())
-
+world.add_object(Box(x = 150, y = 290, height = 30 , width = 300))
+world.add_object(Box(x = 295, y = 150, height = 300, width = 30))
+world.add_object(Box(x =  5, y = 150,  height = 300, width = 30))
 
 app.run() # アプリを実行
