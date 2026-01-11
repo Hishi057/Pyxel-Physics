@@ -78,7 +78,7 @@ class UI_text(pyxphys.GameObject):
         pyxel.text(self.x, self.y, "PRESS SPACE BUTTON", 0)
 
 # 初期設定
-app = pyxphys.App(300,300)
+app = pyxphys.App(screen_x = 300,screen_y= 300)
 world = pyxphys.World(gravity = 0.9)
 ui = pyxphys.World(gravity = 0)
 app.add_world(world)

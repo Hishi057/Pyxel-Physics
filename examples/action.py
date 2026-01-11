@@ -23,7 +23,7 @@ class Player(pyxphys.GameObject):
                    self.y - self.height/2, 
                    self.width, 
                    self.height, 
-                   pyxel.COLOR_BLACK)
+                   pyxel.COLOR_WHITE)
 
 
 class Wall(pyxphys.GameObject):
@@ -41,10 +41,10 @@ class Wall(pyxphys.GameObject):
                    self.y - self.height/2, 
                    self.width, 
                    self.height, 
-                   pyxel.COLOR_DARK_BLUE)
+                   pyxel.COLOR_WHITE)
 
 # 初期設定
-app = pyxphys.App(300,300)
+app = pyxphys.App(screen_x=300, screen_y=300, background_color=pyxel.COLOR_BLACK)
 world = pyxphys.World(gravity = 0.9)
 ui = pyxphys.World(gravity = 0)
 app.add_world(world)

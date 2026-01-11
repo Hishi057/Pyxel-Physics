@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyxel-physics-engine"
-version = "0.1.0"
+version = "0.1.1"
 description = "GameObject and Physics framework for Pyxel"
 readme = "README.md"
 authors = [{ name = "Hishi057", email = "Hiratsuka512@icloud.com" }]
