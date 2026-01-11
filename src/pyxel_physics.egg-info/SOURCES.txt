@@ -1,8 +1,0 @@
-README.md
-pyproject.toml
-src/pyxel_physics.egg-info/PKG-INFO
-src/pyxel_physics.egg-info/SOURCES.txt
-src/pyxel_physics.egg-info/dependency_links.txt
-src/pyxel_physics.egg-info/requires.txt
-src/pyxel_physics.egg-info/top_level.txt
-src/pyxphys/core.py

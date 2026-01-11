@@ -1,4 +1,4 @@
-import pyxphys 
+import pyxphys
 import pyxel
 
 class GameManager(pyxphys.GameObject):

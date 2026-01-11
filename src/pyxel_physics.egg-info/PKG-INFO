@@ -1,7 +1,0 @@
-Metadata-Version: 2.4
-Name: pyxel-physics
-Version: 0.1.0
-Summary: GameObject and Physics framework for Pyxel
-Author-email: Hishi057 <Hiratsuka512@icloud.com>
-Description-Content-Type: text/markdown
-Requires-Dist: pyxel
