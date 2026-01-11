@@ -83,6 +83,8 @@ class BoxCollider(Collider):
 def check_collision(c1, c2):
     if isinstance(c1, CircleCollider) and isinstance(c2, CircleCollider):
         return _check_circle_circle(c1, c2)
+    if isinstance(c1, BoxCollider) and isinstance(c2, BoxCollider):
+        return _check_box_box(c1, c2)
     if isinstance(c1, BoxCollider) and isinstance(c2, CircleCollider):
         return _check_box_circle(c1, c2)
     if isinstance(c1, CircleCollider) and isinstance(c2, BoxCollider):
@@ -95,12 +97,11 @@ def _check_circle_circle(c1, c2):
     dist_sq = dx**2 + dy**2
     return dist_sq < (c1.radius + c2.radius)**2
 
+def _check_box_box(box1, box2):
+    return (abs(box1.center_x - box2.center_x) < (box1.width + box2.width) / 2 and
+            abs(box1.center_y - box2.center_y) < (box1.height + box2.height) / 2)
+
 def _check_box_circle(box, circle):
-    """
-    矩形と円の衝突判定
-    box: BoxCollider（中心が座標の中心）
-    circle: CircleCollider（中心が座標の中心）
-    """
     
     # 円の中心から矩形の最も近い点を見つける
     closest_x = clamp(circle.center_x, box.center_x - box.width/2, box.center_x + box.width/2)

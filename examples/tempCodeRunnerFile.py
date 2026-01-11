@@ -1,1 +1,0 @@
-self.add_collider(pyxphys.CircleCollider(self.radius))

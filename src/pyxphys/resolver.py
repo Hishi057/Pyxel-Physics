@@ -115,3 +115,24 @@ def resolve_box_circle(box, circle):
         depth = circle.radius - dist
 
     apply_collision_response(circle.parent, box.parent, nx, ny, depth)
+
+# box, box
+def resolve_box_box(box1, box2):
+    dx = box2.center_x - box1.center_x
+    dy = box2.center_y - box1.center_y
+    overlap_x = (box1.width + box2.width) / 2 - abs(dx)
+    overlap_y = (box1.height + box2.height) / 2 - abs(dy)
+    
+    # 重なりが小さい方の軸を衝突軸とする
+    if overlap_x < overlap_y:
+        # X軸方向の衝突
+        nx = 1.0 if dx > 0 else -1.0
+        ny = 0.0
+        depth = overlap_x
+    else:
+        # Y軸方向の衝突
+        nx = 0.0
+        ny = 1.0 if dy > 0 else -1.0
+        depth = overlap_y
+    
+    apply_collision_response(box1.parent, box2.parent, nx, ny, depth)

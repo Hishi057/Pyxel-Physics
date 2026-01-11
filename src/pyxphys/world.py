@@ -2,7 +2,7 @@ import pyxel
 from typing import List
 from .engine import GameObject
 from .collision import check_collision, BoxCollider, CircleCollider
-from .resolver import  resolve_box_circle, resolve_circle_circle
+from .resolver import  resolve_box_circle, resolve_circle_circle, resolve_box_box
 import math
 from itertools import combinations
 from .spatial import Quadtree, Rect
@@ -70,6 +70,8 @@ class World:
                         resolve_box_circle(c1, c2)
                     if isinstance(c1, CircleCollider) and isinstance(c2, BoxCollider):
                         resolve_box_circle(c2, c1)        
+                    if isinstance(c1, BoxCollider) and isinstance(c2, BoxCollider):
+                        resolve_box_box(c1, c2) 
                 # ユーザー設定の処理
                 c1.parent.on_collision(c2.parent) 
         
