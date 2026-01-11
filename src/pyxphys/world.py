@@ -5,6 +5,7 @@ from .collision import check_collision, BoxCollider, CircleCollider
 from .resolver import  resolve_box_circle, resolve_circle_circle
 import math
 from itertools import combinations
+from .spatial import Quadtree, Rect
 
 class World:
     app : 'App'
@@ -23,27 +24,42 @@ class World:
         self.objects = new_objects
 
         # 物理演算
-        sub_step = 3
+        sub_step = 4
         dt = 1 / sub_step
-        for o in self.objects:
+
+        for i in range(sub_step):
+            for o in self.objects:
             # 位置が固定されていなければ物理的な挙動を計算
-            if o.IS_FREEZE_POSITION == False:
-                for i in range(sub_step):
+                if o.IS_FREEZE_POSITION == False:
                     o.vx += o.ax * dt
                     o.vy += (o.ay + self.gravity) * dt
                     o.x += o.vx * dt
                     o.y += o.vy *dt
-                    self._check_collision()
-                if math.fabs(o.vx / dt) < o.STILL_SHREHOLD:
-                    o.vx = 0
-                if math.fabs(o.vy / dt) < o.STILL_SHREHOLD:
-                    o.vy = 0
 
+                # aabbの位置更新
+                for collider in o.colliders:
+                    collider.update_aabb()
+            # 四分木 の準備
+            quadtree = Quadtree(Rect(-500, -500, 2000, 2000))
+            for o in self.objects:
+                for collider in o.colliders:
+                    quadtree.insert((collider, collider.aabb))
+            for o in self.objects:
+                self._check_collision(o, quadtree)
+        
+        for o in self.objects:
+            # 速度が遅過ぎたらストップ
+            if math.fabs(o.vx) < o.STILL_SHREHOLD:
+                o.vx = 0
+            if math.fabs(o.vy) < o.STILL_SHREHOLD:
+                o.vy = 0
+            # 個別のupdate処理
             o.update()
+        
+
 
     # 衝突判定
-    def _check_collision(self):
-        # 衝突時の処理
+    def _check_collision(self, o : GameObject, quadtree : Quadtree):
         def handle_physics_collision(c1, c2):
             if c1.parent != c2.parent and check_collision(c1, c2):
                 # 物理的な挙動の計算
@@ -56,26 +72,17 @@ class World:
                         resolve_box_circle(c2, c1)        
                 # ユーザー設定の処理
                 c1.parent.on_collision(c2.parent) 
-                c2.parent.on_collision(c1.parent) 
+        
+        found_list = []
+        for collider in o.colliders:
+            quadtree.query(collider.aabb, found_list)
 
-        all_dynamic_colliders = []
-        all_static_colliders = []
-        for o in self.objects:
-            if o.IS_FREEZE_POSITION:
-                all_static_colliders.extend(o.colliders)
-            else:
-                all_dynamic_colliders.extend(o.colliders)
-
-        for c1 in all_dynamic_colliders:
-            for c2 in all_static_colliders:
-                handle_physics_collision(c1, c2)
-            
-        for c1, c2 in combinations(all_dynamic_colliders, 2):
+        for c1 in o.colliders:
+            for c2 in found_list:
                 handle_physics_collision(c1, c2)          
 
 
     def draw(self):
-        pyxel.cls(7)
         for o in self.objects:
             o.draw()
 

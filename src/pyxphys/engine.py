@@ -27,7 +27,7 @@ class GameObject:
                  ax : float = 0,
                  ay : float = 0,
                  mass : float = 1,
-                 STILL_SHREHOLD : float = 1/4,
+                 STILL_SHREHOLD : float = 0.5,
                  IS_FREEZE_POSITION : bool = False
                  ):
 

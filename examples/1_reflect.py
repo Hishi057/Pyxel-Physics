@@ -2,12 +2,16 @@ import pyxphys
 import pyxel
 
 class BallManager(pyxphys.GameObject):
+    counter : int
     def __init__(self):
         super().__init__()
+        self.counter = 1
     
     def update(self):
         if pyxel.btnp(pyxel.KEY_SPACE):
             self.world.add_object(Ball())
+            self.counter += 1
+            print(self.counter)
 
 class Box(pyxphys.GameObject):
     height : float
@@ -28,7 +32,7 @@ class Box(pyxphys.GameObject):
 
 class Ball(pyxphys.GameObject):
     color : int = 6 # ボールの色
-    radius : int = 24 # ボールの半径
+    radius : int = 8 # ボールの半径
 
     def __init__(self):
         super().__init__()
@@ -43,11 +47,21 @@ class Ball(pyxphys.GameObject):
     def draw(self):
         pyxel.circ(self.x, self.y, self.radius, self.color)
 
+class UI_text(pyxphys.GameObject):
+    def __init__(self):
+        super().__init__()
+        self.IS_FREEZE_POSITION = True
+    def draw(self):
+        pyxel.text(self.x, self.y, "PRESS SPACE BUTTON", 0)
+
 # 初期設定
 app = pyxphys.App(300,300)
 world = pyxphys.World(gravity = 0.9)
+ui = pyxphys.World(gravity = 0)
 app.add_world(world)
+app.add_world(ui)
 
+ui.add_object(UI_text())
 world.add_object(BallManager())
 world.add_object(Ball())
 world.add_object(Box(x = 150, y = 290, height = 30 , width = 300))

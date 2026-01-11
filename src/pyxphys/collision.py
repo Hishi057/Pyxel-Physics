@@ -1,9 +1,11 @@
 from .utils import distance, clamp
 import math
+from .spatial import Rect
 
 class Collider:
     parent : "GameObject"
     is_trigger : bool
+    aabb : Rect
 
     def __init__(self, offset_x=0, offset_y=0, tag="", is_trigger = False):
         self.offset_x = offset_x
@@ -11,9 +13,14 @@ class Collider:
         self.tag = tag
         self.parent = None
         self.is_trigger = is_trigger
+        self.aabb = Rect(0,0,0,0)
 
     # ある点がCollisionの中に入っているかどうか返す
     def contains(self, x : float, y : float):
+        pass
+
+    # AABBの当たり判定を更新
+    def update_aabb(self):
         pass
 
 class CircleCollider(Collider):
@@ -34,6 +41,13 @@ class CircleCollider(Collider):
         if distance(self.center_x, self.center_y, x, y) <= self.radius:
             return True
         return False
+    
+    def update_aabb(self):
+        self.aabb = Rect(self.center_x - self.radius
+                         ,self.center_y - self.radius 
+                         ,self.radius * 2
+                         ,self.radius * 2
+                         )
 
 #
 # offset を中心に、縦height, 横width の長方形のCollider
@@ -53,6 +67,13 @@ class BoxCollider(Collider):
     @property
     def center_y(self):
         return self.parent.y + self.offset_y
+    
+    def update_aabb(self):
+        self.aabb = Rect(self.center_x - self.width/2
+                         ,self.center_y - self.height/2 
+                         ,self.width
+                         ,self.height
+                         )
     
     def contains(self, x : float, y : float):
         pass
