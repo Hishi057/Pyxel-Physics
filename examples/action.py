@@ -1,29 +1,49 @@
 import pyxphys
 import pyxel
+import math
 
 class Player(pyxphys.GameObject):
     counter : int
     width : float = 20
     height : float = 36
+    scale_y : float
+    is_ground : bool
+
     def __init__(self):
         super().__init__(x = 150, y = 50)
         self.add_collider(pyxphys.BoxCollider(self.width, self.height))
+        self.scale_y = 1
+        self.is_ground = False
     
     def update(self):
         self.vx = self.vx * -1/10
-        if pyxel.btnp(pyxel.KEY_SPACE):
-            self.vy = -10
+        if pyxel.btnp(pyxel.KEY_SPACE) and self.is_ground:
+            self.vy = -12
+            self.scale_y = 1.3
+            self.is_ground = False
         if pyxel.btn(pyxel.KEY_D):
             self.vx = 3
         if pyxel.btn(pyxel.KEY_A):
             self.vx = -3
+        
+        self.scale_y += (1.0 - self.scale_y) * 0.2
 
     def draw(self):
-        pyxel.rect(self.x - self.width/2, 
-                   self.y - self.height/2, 
-                   self.width, 
-                   self.height, 
+        width = self.width / self.scale_y
+        height = self.height * self.scale_y
+        height_diff = height - self.height
+        pyxel.rect(self.x - width/2, 
+                   self.y - height/2 - height_diff, 
+                   width, 
+                   height, 
                    pyxel.COLOR_WHITE)
+        
+    
+    def on_collision(self, other):
+        if self.is_ground == False:
+            self.scale_y = 0.85
+            self.is_ground = True
+
 
 
 class Wall(pyxphys.GameObject):
