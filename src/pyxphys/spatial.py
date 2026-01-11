@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 class Rect:
     def __init__(self, x, y, w, h):
         self.x, self.y, self.w, self.h = x, y, w, h
@@ -28,7 +30,7 @@ class Rect:
 class Quadtree:
     bounds : Rect # 担当領域
     objects : list[("Collider", Rect)]
-    children : list[Quadtree]
+    children : list["Quadtree"]
     divided : bool
     level : int
     max_level : int
