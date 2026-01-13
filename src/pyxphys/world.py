@@ -115,6 +115,11 @@ class World:
     def draw(self):
         for o in self.objects:
             o.draw()
+    
+    def draw_debug(self, color = pyxel.COLOR_RED):
+        for o in self.objects:
+            for c in o.colliders:
+                c.draw_debug(color=color)
 
     def add_object(self, object : GameObject):
         self.objects.append(object)

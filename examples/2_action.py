@@ -71,7 +71,7 @@ class Wall(pyxphys.GameObject):
                    pyxel.COLOR_WHITE)
 
 # 初期設定
-app = pyxphys.App(screen_x=300, screen_y=300, background_color=pyxel.COLOR_BLACK)
+app = pyxphys.App(screen_x=300, screen_y=300, background_color=pyxel.COLOR_BLACK, debug_mode=False)
 world = pyxphys.World(gravity = 0.9)
 ui = pyxphys.World(gravity = 0)
 app.add_world(world)

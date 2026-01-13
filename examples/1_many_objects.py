@@ -56,7 +56,6 @@ class Box(pyxphys.GameObject):
     width : float = 20
     height : float = 32
 
-
     def __init__(self):
         super().__init__()
         self.name = "box"
@@ -79,7 +78,7 @@ class UI_text(pyxphys.GameObject):
         pyxel.text(self.x, self.y, "PRESS SPACE BUTTON", 0)
 
 # 初期設定
-app = pyxphys.App(screen_x = 300,screen_y= 300)
+app = pyxphys.App(screen_x = 300,screen_y= 300, debug_mode=True)
 world = pyxphys.World(gravity = 0.9)
 ui = pyxphys.World(gravity = 0)
 app.add_world(world)

@@ -2,6 +2,7 @@ from .utils import distance, clamp
 import math
 from .constants import CombineMode
 from .geometry import Ray, Rect, RaycastHit
+import pyxel
 
 class Collider:
     parent : "GameObject"
@@ -40,6 +41,10 @@ class Collider:
         pass
 
     def intersect_ray(self, ray):
+        pass
+    
+    # デバッグ用
+    def draw_debug(self):
         pass
 
 class CircleCollider(Collider):
@@ -109,6 +114,9 @@ class CircleCollider(Collider):
         
         return RaycastHit(None, t, (hit_x, hit_y), (normal_x, normal_y))
 
+    def draw_debug(self, color = pyxel.COLOR_RED):
+        pyxel.circb(self.center_x, self.center_y, self.radius, color)
+
 
 #
 # offset を中心に、縦height, 横width の長方形のCollider
@@ -174,6 +182,9 @@ class BoxCollider(Collider):
             normal = (0, 0) 
 
         return RaycastHit(None, t_near, (hit_x, hit_y), normal)
+
+    def draw_debug(self, color = pyxel.COLOR_RED):
+        pyxel.rectb(self.center_x - self.width/2, self.center_y - self.height/2, self.width, self.height, color)
 
 
 # 2つのColliderの衝突判定
