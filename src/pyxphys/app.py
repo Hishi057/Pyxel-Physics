@@ -10,17 +10,19 @@ class App:
     background_color : int
     worlds : list[World]
     debug_mode : bool
+    debug_color : int
     cam_x : float
     cam_y : float
     cam_speed : float
 
-    def __init__(self,screen_x = 200,screen_y = 200, background_color = 7, debug_mode = False):
+    def __init__(self,screen_x = 200,screen_y = 200, background_color = 7, debug_mode = False, debug_color = pyxel.COLOR_RED):
         self.screen_x = screen_x
         self.screen_y = screen_y
         self.background_color = background_color
         pyxel.init(screen_x, screen_y)
         self.worlds = []
         self.debug_mode = debug_mode
+        self.debug_color = debug_color
         self.cam_x = 0
         self.cam_y = 0
         self.cam_speed = 3
@@ -66,7 +68,6 @@ class App:
         else:
             raise FileNotFoundError(f"Asset not found: {full_path}")
     
-    def draw_debug(self, color = pyxel.COLOR_RED):
-        pyxel.text(4 + self.cam_x,self.screen_y - 8 - 4 + self.cam_y,"DEBUG MODE", color)
-        for w in self.worlds:
-            w.draw_debug(color = color)
+    def draw_debug(self):
+        color = self.debug_color
+        pyxel.text(4 + self.cam_x,self.screen_y - 8 - 4 + self.cam_y,"APP DEBUG MODE", color)

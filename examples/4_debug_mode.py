@@ -85,8 +85,8 @@ app.add_world(ui)
 ui.add_object(UI_text())
 world.add_object(GameManager())
 world.add_object(Ball())
-world.add_object(Wall(x = 150, y = 290, height = 30 , width = 300))
-world.add_object(Wall(x = 295, y = 150, height = 300, width = 30))
-world.add_object(Wall(x =  5, y = 150,  height = 300, width = 30))
+world.add_object(Wall(x = 150, y = 290, height = 30 , width = 2000))
+world.add_object(Wall(x = 150 + 500, y = 150, height = 300, width = 30))
+world.add_object(Wall(x = 150 - 500, y = 150,  height = 300, width = 30))
 
 app.run() # アプリを実行

@@ -9,6 +9,7 @@ class Quadtree:
     level : int
     max_level : int
     capacity : int = 3
+    query_count : int = 0 # 手動でリセットする必要があるので注意
 
     def __init__(self, bounds : Rect, level = 0, max_level = 10):
         self.bounds = bounds
@@ -63,17 +64,21 @@ class Quadtree:
             self.objects.append(obj)
         return 
         
-    def query(self, search_aabb, found_list):
+    def query(self, search_aabb, found_list, source_id):
         # 枝切り
         if not self.bounds.intersects(search_aabb):
             return
 
         for collider, aabb in self.objects:
+            # 重複カウントを避けるため
+            if source_id > collider.id:
+                continue
+            Quadtree.query_count += 1
             if aabb.intersects(search_aabb):
                 found_list.append(collider)
 
         for child in self.children:
-            child.query(search_aabb, found_list)
+            child.query(search_aabb, found_list, source_id)
 
     def query_ray(self, ray: Ray, distance_limit: float):
         best_hit = self._query_lay_local(ray, distance_limit)

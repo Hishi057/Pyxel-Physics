@@ -5,6 +5,7 @@ from .geometry import Ray, Rect, RaycastHit
 import pyxel
 
 class Collider:
+    id : int
     parent : "GameObject"
     is_trigger : bool
     aabb : Rect
@@ -21,6 +22,7 @@ class Collider:
                  restitution_combine_mode = CombineMode.MAX,
                  restitution_priority = 0
                  ):
+        self.id = -1
         self.offset_x = offset_x
         self.offset_y = offset_y
         self.tag = tag

@@ -12,9 +12,18 @@ class World:
     app : 'App'
     objects : list[GameObject]
     gravity : float
-    def __init__(self, gravity : float = 0):
+    sub_step : int
+    debug_mode : bool
+    debug_color : int
+    debug_quadtree_query_count : int
+    def __init__(self, gravity : float = 0, sub_step = 4, debug_mode : bool = False, debug_color = pyxel.COLOR_RED):
         self.objects = []
         self.gravity = gravity
+        self.sub_step = sub_step
+        self.debug_mode = debug_mode
+        self.debug_color = debug_color
+        self.debug_quadtree_query_count = 0
+        
 
     def update_physics(self):
         # オブジェクトを削除する処理
@@ -25,10 +34,10 @@ class World:
         self.objects = new_objects
 
         # 物理演算
-        sub_step = 4
-        dt = 1 / sub_step
+        dt = 1 / self.sub_step
+        for i in range(self.sub_step):
 
-        for i in range(sub_step):
+            id_counter = 0
             for o in self.objects:
             # 位置が固定されていなければ物理的な挙動を計算
                 if o.IS_FREEZE_POSITION == False:
@@ -40,12 +49,15 @@ class World:
                 # aabbの位置更新
                 for collider in o.colliders:
                     collider.update_aabb()
+                    collider.id = id_counter
+                    id_counter += 1
             
+            Quadtree.query_count = 0
             quadtree = self.get_quadtree()
-
             for o in self.objects:
                 self._check_collision(o, quadtree)
-        
+            self.debug_quadtree_query_count = Quadtree.query_count
+
         for o in self.objects:
             # 速度が遅過ぎたらストップ
             if math.fabs(o.vx) < o.STILL_SHREHOLD:
@@ -71,10 +83,11 @@ class World:
                         resolve_box_box(c1, c2) 
                 # ユーザー設定の処理
                 c1.parent.on_collision(c2.parent) 
+                c2.parent.on_collision(c1.parent) 
         
         found_list = []
         for collider in o.colliders:
-            quadtree.query(collider.aabb, found_list)
+            quadtree.query(collider.aabb, found_list, collider.id)
 
         for c1 in o.colliders:
             for c2 in found_list:
@@ -93,6 +106,7 @@ class World:
             min_y = min(min_y, o.y)
 
         quadtree = Quadtree(Rect(min_x - 1, min_y - 1, max_x + 1, max_y + 1))
+
         for o in self.objects:
                 for collider in o.colliders:
                     quadtree.insert((collider, collider.aabb))
@@ -115,11 +129,20 @@ class World:
     def draw(self):
         for o in self.objects:
             o.draw()
+        if self.debug_mode:
+            self.draw_debug()
     
-    def draw_debug(self, color = pyxel.COLOR_RED):
+    def draw_debug(self):
+        color = self.debug_color
         for o in self.objects:
             for c in o.colliders:
                 c.draw_debug(color=color)
+        if self.app.debug_mode == True:
+            rate = (self.debug_quadtree_query_count / len(self.objects) ** 2) * 100
+            pyxel.text(4, 3,f"[ WORLD DEBUG MODE ]", color)
+            pyxel.text(4, 11,f"OBJECT COUNT: {len(self.objects)}", color)
+            pyxel.text(4, 19,f"QUADTREE QUERY COUNTER: {self.debug_quadtree_query_count}", color)
+            pyxel.text(4, 27,f"EFFICIENCY. vs N^2: {rate:.2f} %", color)
 
     def add_object(self, object : GameObject):
         self.objects.append(object)
