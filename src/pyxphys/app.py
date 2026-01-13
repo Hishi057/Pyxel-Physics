@@ -1,6 +1,8 @@
 import pyxel
 from typing import List
 from .world import World
+import os
+import inspect
 
 class App:
     screen_x : int
@@ -30,3 +32,17 @@ class App:
         pyxel.cls(self.background_color)
         for w in self.worlds:
             w.draw()
+
+    def load_resource(self, filename: str):
+        frame = inspect.stack()[1]
+        caller_dir = os.path.dirname(os.path.abspath(frame.filename))
+        
+        # 絶対パス
+        full_path = os.path.join(caller_dir, filename)
+        
+        # ロード
+        if os.path.exists(full_path):
+            pyxel.load(full_path)
+            print(f"Resource loaded: {full_path}")
+        else:
+            raise FileNotFoundError(f"Asset not found: {full_path}")
