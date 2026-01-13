@@ -5,7 +5,8 @@ from .collision import check_collision, BoxCollider, CircleCollider
 from .resolver import  resolve_box_circle, resolve_circle_circle, resolve_box_box
 import math
 from itertools import combinations
-from .spatial import Quadtree, Rect
+from .spatial import Quadtree
+from .geometry import Rect, RaycastHit, Ray
 
 class World:
     app : 'App'
@@ -39,11 +40,9 @@ class World:
                 # aabbの位置更新
                 for collider in o.colliders:
                     collider.update_aabb()
-            # 四分木 の準備
-            quadtree = Quadtree(Rect(-500, -500, 2000, 2000))
-            for o in self.objects:
-                for collider in o.colliders:
-                    quadtree.insert((collider, collider.aabb))
+            
+            quadtree = self.get_quadtree()
+
             for o in self.objects:
                 self._check_collision(o, quadtree)
         
@@ -55,8 +54,6 @@ class World:
                 o.vy = 0
             # 個別のupdate処理
             o.update()
-        
-
 
     # 衝突判定
     def _check_collision(self, o : GameObject, quadtree : Quadtree):
@@ -81,8 +78,39 @@ class World:
 
         for c1 in o.colliders:
             for c2 in found_list:
-                handle_physics_collision(c1, c2)          
+                handle_physics_collision(c1, c2)       
 
+    def get_quadtree(self):
+        # 四分木 の準備
+        max_x : float = float('-inf')
+        min_x : float = float('inf')
+        max_y : float = float('-inf')
+        min_y : float = float('inf')
+        for o in self.objects:
+            max_x = max(max_x, o.x)
+            min_x = min(min_x, o.x)
+            max_y = max(max_y, o.y)
+            min_y = min(min_y, o.y)
+
+        quadtree = Quadtree(Rect(min_x - 1, min_y - 1, max_x + 1, max_y + 1))
+        for o in self.objects:
+                for collider in o.colliders:
+                    quadtree.insert((collider, collider.aabb))
+
+        return quadtree
+    
+    def raycast_angle(self, x : float, y : float, angle_deg : float, max_dist=float('inf')):
+        rad = math.radians(angle_deg)
+        dx = math.cos(rad)
+        dy = math.sin(rad)
+        return self.raycast(x, y, dx, dy, max_dist)
+    
+    def raycast_to(self, x1 : float, y1 : float, x2 : float, y2 : float, max_dist=float('inf')):
+        return self.raycast(x1, y1, x2 - x1, y2 - y1)
+    
+    def raycast(self, x, y, dx, dy, max_dist=float('inf')):
+        ray = Ray(x, y, dx, dy)
+        return self.get_quadtree().query_ray(ray, max_dist)
 
     def draw(self):
         for o in self.objects:

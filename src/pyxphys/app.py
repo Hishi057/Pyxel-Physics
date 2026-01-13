@@ -7,7 +7,6 @@ class App:
     screen_y : int
     background_color : int
     worlds : list[World]
-    
 
     def __init__(self,screen_x = 200,screen_y = 200, background_color = 7):
         self.screen_x = screen_x

@@ -6,3 +6,5 @@ from .engine import GameObject
 from .collision import CircleCollider, BoxCollider, check_collision
 from .constants import CombineMode
 from .utils import distance, distance_object
+from .spatial import Quadtree
+from .geometry import Rect, Ray

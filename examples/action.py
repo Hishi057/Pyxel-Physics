@@ -7,26 +7,34 @@ class Player(pyxphys.GameObject):
     width : float = 20
     height : float = 36
     scale_y : float
-    is_ground : bool
 
     def __init__(self):
         super().__init__(x = 150, y = 50)
         self.add_collider(pyxphys.BoxCollider(self.width, self.height))
         self.scale_y = 1
-        self.is_ground = False
     
     def update(self):
         self.vx = self.vx * -1/10
-        if pyxel.btnp(pyxel.KEY_SPACE) and self.is_ground:
+        if pyxel.btnp(pyxel.KEY_SPACE) and self.is_ground():
             self.vy = -12
             self.scale_y = 1.3
-            self.is_ground = False
         if pyxel.btn(pyxel.KEY_D):
             self.vx = 3
         if pyxel.btn(pyxel.KEY_A):
             self.vx = -3
         
         self.scale_y += (1.0 - self.scale_y) * 0.2
+
+    # rayを使った接地判定
+    def is_ground(self):
+        raycast1 = world.raycast(self.x + self.width/2 + 2, self.y, 0, 1)
+        raycast2 = world.raycast(self.x - self.width/2 - 2, self.y, 0, 1)
+        if raycast1 and "map" in raycast1.obj.tags and raycast1.distance <= self.height/2 + 3:
+            return True
+        elif raycast2 and "map" in raycast2.obj.tags and raycast2.distance <= self.height/2 + 3:
+            return True
+        else:
+            return False
 
     def draw(self):
         width = self.width / self.scale_y
@@ -38,11 +46,9 @@ class Player(pyxphys.GameObject):
                    height, 
                    pyxel.COLOR_WHITE)
         
-    
     def on_collision(self, other):
         if self.is_ground == False:
             self.scale_y = 0.85
-            self.is_ground = True
 
 
 
@@ -55,6 +61,7 @@ class Wall(pyxphys.GameObject):
         self.height = height
         self.width = width
         self.add_collider(pyxphys.BoxCollider(self.width, self.height))
+        self.tags.append("map")
     
     def draw(self):
         pyxel.rect(self.x - self.width/2, 
